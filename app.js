@@ -13,8 +13,8 @@ app.listen(port, () => {
 
 async function test() {
     game = new Game();
-    // await game.newDeck();
-    // await game.drawCards(8);
+    await game.newDeck();
+    await game.drawCards(8);
     game.loadJokers();
 }
 test();

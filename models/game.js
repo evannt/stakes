@@ -23,7 +23,10 @@ class Joker {
 }
 
 class Game {
+    static #TOTAL_ROUNDS = 7;
+    static #MAX_JOKERS = 3;
     static #DECK_COUNT = 3;
+    static #CARDS_DEALT = 7;
     static #CREATE_DECK_URL = `https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=${Game.#DECK_COUNT}`;
     static #DRAW_CARD_URL = `https://deckofcardsapi.com/api/deck/`;
 
@@ -38,12 +41,24 @@ class Game {
         this.hand = [];
         this.jokers = [];
         this.score = 0;
-        this.chips = 0;
+        this.chips = 5;
+        this.discards = 3,
         this.multiplier = 1;
         this.round = 1;
         // this.highScore = session.highScore || 0;
         // add high score
     }
+
+    async startGame() {
+
+    }
+
+    async nextRound() {
+        this.drawCards(Game.#CARDS_DEALT);
+
+    }
+
+    
 
     async newDeck() {
         this.deck = await (await fetch(Game.#CREATE_DECK_URL)).json();
