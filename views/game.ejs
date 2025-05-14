@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="/style.css">
+    <script defer src="/game-client.js"></script>
+    <title>Cranky</title>
+  </head>
+  <body>
+    <div id="gameContainer">
+      <h3>Game Info</h3>
+      <div id="roundIndicator">
+        Round: <%= Math.min(game.round, 7) %>/7
+      </div>
+      <div id="scoreContainer">
+        <div id="gameHighScore">High Score: <%= highScore %></div>
+        <div id="gameScore">Score: <%= game.score %></div>
+        <div id="gameMult">Mult: x<%= game.mult %></div>
+        <div id="gameChips">Chips: <%= game.chips %></div>
+        <div id="gameDiscards">Discards: <%= game.discards %></div>
+        <!-- Add a high score using sessions -->
+      </div>
+      <h3>Hand Info</h3>
+      <div id="handScoreContainer">
+        <div id="handType"><%= game.handType %></div>
+        <div id="handBaseScore"><%= game.handBaseScore %></div>
+        <div id="handMult"><%= game.handMult %></div>
+      </div>
+      <div id="roundResult">
+        <div id="roundScore"></div>
+        <div id="roundChips"></div>
+      </div>
+      <div id="cardContainer">
+        <% game.hand.forEach(c => { %>
+          <div class="card" data-id="<%= c.id %>" data-held="<%= c.selected ? "true" : "false" %>">
+            <img id="card-image" src="<%= c.image %>" alt="<%= c.rank %> of <%= c.suit %>" width="80" height="112">
+          </div>
+        <% }); %>
+      </div>
+      <div id="controls">
+        <button id="playHandBtn">Play Hand</button>
+        <button id="discardBtn">Discard</button>
+      </div>
+      <h3>Joker Store</h3>
+      <div id="jokerStoreContainer">
+        <% game.jokerStore.forEach(j => { %>
+          <div class="storeJoker" data-name="<%= j.name %>">
+            <div id="jokerName"><%= j.name %></div>
+            <div id="jokerRarity"><%= j.rarity %></div>
+            <div id="jokerDescription"><%= j.description %></div>
+            <div id="jokerCost">Cost: <%= j.cost %></div>
+          </div>
+          <button id="buyJokerBtn" data-name="<%= j.name %>">Buy</button>
+        <% }); %>
+      </div>
+      <h3>Jokers</h3>
+      <div id="jokerContainer">
+        <% game.jokers.forEach(j => { %>
+          <div class="joker" data-name="<%= j.name %>">
+            <div id="jokerName"><%= j.name %></div>
+            <div id="jokerRarity"><%= j.rarity %></div>
+            <div id="jokerDescription"><%= j.description %></div>
+          </div>
+          <button id="burnJokerBtn" data-name="<%= j.name %>">Burn</button>
+        <% }); %>
+      </div>
+    </div>
+  </body>
+</html>

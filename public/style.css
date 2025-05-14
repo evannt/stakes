@@ -1,0 +1,51 @@
+html {
+    font-size: 14px;
+}
+
+body {
+    background-color: rgb(49, 49, 49);
+    padding: 20px 0;
+}
+
+#gameContainer {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: rgb(70, 70, 70);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#cardContainer {
+    display: flex;
+    flex-wrap:wrap ;
+    gap: 0.7rem;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+#buyJokerBtn {
+    color: green;
+}
+
+#burnJokerBtn {
+    color: red;
+}
+
+.card {
+    width: 80px;
+    height: auto;
+    transition: all 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+}
+
+.card[data-held="true"] {
+    transform: translateY(-20px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+}
