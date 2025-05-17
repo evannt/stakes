@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         } else if (document.querySelector("#newGameBtn")) {
             document.querySelector("#newGameBtn").addEventListener("click", restartGame);
         }
+        document.getElementById("saveScoreForm").addEventListener("submit", saveScore);
     }
 
     function addJokerButtons() {
@@ -288,17 +289,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         const roundTracker = document.querySelector("#roundTracker");
         if (roundTracker) {
             // Clear existing dots
-            roundTracker.innerHTML = '';
+            roundTracker.innerHTML = "";
 
             // Create new dots based on current game state
             for (let i = 1; i <= 7; i++) {
-                const dot = document.createElement('div');
-                dot.className = 'round-dot';
+                const dot = document.createElement("div");
+                dot.className = "round-dot";
 
                 if (i < game.round) {
-                    dot.classList.add('completed');
+                    dot.classList.add("completed");
                 } else if (i === game.round) {
-                    dot.classList.add('active');
+                    dot.classList.add("active");
                 }
 
                 roundTracker.appendChild(dot);
@@ -329,7 +330,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function showNewGameControls() {
-        document.querySelector("#controls").innerHTML = `<button id="newGameBtn">New Game</button>`;
+        document.querySelector("#controls").innerHTML = `
+            <form id="saveScoreForm">
+                <input type="text" id="username" placeholder="Enter your username" required>
+                <button type="submit">Save Score</button>
+            </form>
+            <button id="newGameBtn">New Game</button>`;
+        document.querySelector("#saveScoreForm").addEventListener("submit", saveScore);
         document.querySelector("#newGameBtn").addEventListener("click", restartGame);
     }
 
@@ -497,4 +504,50 @@ document.addEventListener("DOMContentLoaded", async () => {
         audio.play();
     }
 
+    async function saveScore(event) {
+        event.preventDefault();
+        const username = document.getElementById("username").value;
+        const score = parseInt(document.getElementById("gameScore").textContent);
+
+        try {
+            const response = await fetch("/game/save-score", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, score })
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                alert("Score saved successfully!");
+                await fetchLeaderboard();
+            } else {
+                alert("Failed to save score.");
+            }
+        } catch (error) {
+            console.error("Error saving score:", error);
+            alert("An error occurred while trying to save your score.");
+        }
+    }
+
+    async function fetchLeaderboard() {
+        try {
+            const response = await fetch("/game/api/leaderboard");
+            const topScores = await response.json();
+            displayLeaderboard(topScores);
+        } catch (error) {
+            console.error("Error fetching leaderboard:", error);
+        }
+    }
+
+    function displayLeaderboard(topScores) {
+        const tbody = document.getElementById("leaderboardBody");
+        tbody.innerHTML = "";
+        topScores.forEach(entry => {
+            const row = `<tr>
+            <td>${entry.username}</td>
+            <td>${entry.score}</td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+    }
 });

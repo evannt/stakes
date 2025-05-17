@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { Game } = require("../models/game");
+const db = require('../models/db'); 
 
 const game = new Game();
 game.startGame();
@@ -74,6 +75,46 @@ router.post("/joker/sell", (req, res) => {
     success: success,
     game: game.state,
   });
+});
+
+// Example route for your game page (assuming it has the form)
+router.get('/', (req, res) => {
+  res.render('game'); // Render your game page with the form
+});
+
+// Handle form submission to save score
+router.post('/save-score', async (req, res) => {
+  const { username, score } = req.body;
+  try {
+    // Basic validation
+    if (!username || !score || isNaN(score)) {
+      return res.status(400).json({ success: false, error: 'Invalid username or score' });
+    }
+    await db.saveScore(username, score);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Failed to save score' });
+  }
+});
+
+// API endpoint to fetch top scores
+router.get('/api/leaderboard', async (req, res) => {
+  try {
+    const topScores = await db.getTopScores();
+    res.json(topScores);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch leaderboard' });
+  }
+});
+
+// Optional: Render a leaderboard page
+router.get('/leaderboard', async (req, res) => {
+  try {
+    const topScores = await db.getTopScores();
+    res.render('leaderboard', { topScores });
+  } catch (error) {
+    res.status(500).send('Error fetching leaderboard');
+  }
 });
 
 module.exports = router;

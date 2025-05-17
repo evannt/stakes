@@ -4,8 +4,10 @@ const session = require("express-session");
 const path = require("path");
 const bodyParser = require("body-parser");
 require("dotenv").config();
+const { MongoClient } = require('mongodb');
 const app = express();
-const port = 4000;
+const db = require('./models/db'); 
+const gameRouter = require('./routes/game-router'); 
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -32,3 +34,25 @@ app.get("/", async (req, res) => {
 app.listen(port, () => {
     console.log(`Cranky started at http://localhost:${port}`);
 });
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.set('view engine', 'ejs');
+require('dotenv').config();
+
+// Mount the game router
+app.use('/game', gameRouter);
+
+async function startServer() {
+  try {
+    await db.connect(); // Connect to MongoDB
+    app.listen(process.env.PORT || 3000, () => {
+      console.log(`Server running on port ${process.env.PORT || 3000}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+  }
+}
+
+startServer();
