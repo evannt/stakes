@@ -1,51 +1,424 @@
-html {
-    font-size: 14px;
+/* === Variables === */
+:root {
+    --primary-bg: #758b82;
+    --gradient-bg: linear-gradient(to bottom, #90998f, #32523c);
+    --border-color: #48311b;
+    --accent-color: #f0c36d;
+    --text-color: #f3dac4;
+    --highlight-color: #f7e3ae;
+    --green-btn: #2c6e49;
+    --green-btn-hover: #368a5c;
+    --red-btn: #b23a3a;
+    --red-btn-hover: #c74444;
+    --panel-bg: rgba(25, 85, 60, 0.5);
 }
 
+/* === Base Styling === */
 body {
-    background-color: rgb(49, 49, 49);
-    padding: 20px 0;
+    margin: 0;
+    color: var(--text-color);
+    line-height: 1.1;
+    background: var(--gradient-bg);
 }
 
+/* === Main Container === */
 #gameContainer {
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: rgb(70, 70, 70);
+    max-width: 900px;
+
+    height: 700px;
+    margin: auto;
     padding: 20px;
+    border: 8px solid var(--border-color);
+    border-radius: 12px;
+    background-color: var(--primary-bg);
+    position: relative;
+}
+
+/* === Typography === */
+#headers {
+    font-weight: 600;
+    color: var(--accent-color);
+    border-bottom: 4px solid var(--border-color);
+    margin: 0.5em;
+}
+
+h1 {
+    margin: 0;
+    padding: 0;
+    top: 50px;
+    font-size: 2.5em;
+}
+
+h3 {
+    padding-bottom: 10px;
+    text-align: center;
+    margin-top: 0;
+}
+
+/* === Game Info === */
+
+
+
+
+#handType,
+#roundResult {
+    font-weight: bold;
+    color: var(--accent-color);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+
+}
+
+#roundResult {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-size: 1.2em;
+    min-height: 20px;
+    max-height: 20px;
+}
+
+/* === Scoreboard === */
+#gameHighScore {
+    color: #f34e4e;
+}
+
+#scoreContainer {
+    position: relative;
+    left: 65%;
+    transform: translateX(-50%);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    top: -90px;
+    gap: 15px;
+    padding: 5px;
+    max-width: 600px;
+    max-height: 80px;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background: var(--border-color);
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+
+}
+
+#scoreContainer>div {
+    max-height: auto;
+    text-align: center;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.15);
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+    font-size: auto;
+}
+
+
+/* === Cards === */
+#handScoreContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#handType {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+#scoreCalc {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+#cardScoreContainer {
+    border-radius: 12px;
+    background: var(--panel-bg);
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-color);
 }
 
 #cardContainer {
     display: flex;
-    flex-wrap:wrap ;
-    gap: 0.7rem;
+    flex-wrap: wrap;
     justify-content: center;
-    padding: 20px 0;
-}
-
-#buyJokerBtn {
-    color: green;
-}
-
-#burnJokerBtn {
-    color: red;
+    gap: 10px;
+    padding: 10px;
+    height: 115px;
 }
 
 .card {
-    width: 80px;
-    height: auto;
-    transition: all 0.2s ease-in-out;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    z-index: 2;
+    width: 85px;
+    height: 100px;
+    border-radius: 6px;
+    position: relative;
+    transition: 0.25s ease;
+    cursor: pointer;
 }
 
 .card[data-held="true"] {
-    transform: translateY(-20px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    z-index: 100;
+    transform: translateY(-10px);
+    filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.6));
+}
+
+/* === Controls === */
+#controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 0 0;
+}
+
+button {
+    padding: 7px;
+    margin: 3px 0;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+    background: #8b3333;
+    color: var(--accent-color);
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.4);
+}
+
+#playHandBtn {
+    background: var(--green-btn);
+}
+
+#playHandBtn:hover {
+    background: var(--green-btn-hover);
+}
+
+#discardBtn {
+    background: var(--red-btn);
+}
+
+#discardBtn:hover {
+    background: var(--red-btn-hover);
+}
+
+.buyJokerBtn {
+    background: var(--green-btn);
+}
+
+.buyJokerBtn:hover {
+    background: var(--green-btn-hover);
+}
+
+/* === Joker Section === */
+#jokerSection {
+    display: flex;
+    gap: 20px;
+    max-width: 900px;
+    max-height: 275px;
+    margin: 10px auto;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background-color: var(--panel-bg);
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Store and Player Joker containers */
+.store-side,
+.joker-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#jokerStoreContainer,
+#jokerContainer {
+    padding: 5px;
+    background-color: var(--border-color);
+    border-radius: 8px;
+    overflow-x: auto;
+    border: 1px solid var(--green-btn);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 15px;
+    align-items: center;
+    width: 410px;
+    height: 225px;
+}
+
+.joker,
+.storeJoker {
+    background-color: rgba(139, 93, 51, 0.3);
+    border-radius: 6px;
+    padding: 12px;
+    margin: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+    width: 102px;
+    height: 200px;
+    flex: 0 0 auto;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.joker:hover,
+.storeJoker:hover {
+    transform: translateY(-2px);
+}
+
+.jokerName {
+    font-weight: bold;
+    font-size: 16px;
+    color: var(--accent-color);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+    margin: 6% 0;
+}
+
+.jokerRarity {
+    font-size: 12px;
+    color: var(--highlight-color);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+    margin: 1% 0;
+}
+
+.jokerDescription {
+    font-size: 12px;
+    line-height: 1.3;
+    color: var(--text-color);
+    flex-grow: 1;
+}
+
+.jokerCost {
+    font-weight: bold;
+    color: var(--highlight-color);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+
+/* === Round Indicators === */
+.round-score {
+    font-size: 1.5em;
+    color: #66ff66;
+    margin: 10px 0;
+}
+
+.round-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 10px 0 0 0;
+    /* Removed bottom margin to fix spacing issue */
+}
+
+.round-dot {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: #333;
+    margin: 0 5px;
+}
+
+.round-dot.active {
+    background-color: #ff5555;
+}
+
+.round-dot.completed {
+    background-color: #66ff66;
+}
+
+/*-------------------------------------------------------*/
+
+/* === Main Container === */
+#rule-gameContainer {
+    max-width: 900px;
+    min-height: 500px;
+    margin: auto;
+    margin-bottom: 5px;
+    padding: 0px 10px;
+    border: 8px solid var(--border-color);
+    border-radius: 12px;
+    background-color: var(--primary-bg);
+    position: relative;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* === Typography === */
+#game-name {
+    font-weight: 600;
+    color: var(--accent-color);
+    margin: 0.1em 0.1em;
+    text-align: center;
+    font-size: 2.5em;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+h2 {
+    font-weight: 600;
+    color: var(--accent-color);
+    margin-top: 1.5rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+h3 {
+    font-weight: 600;
+    margin-top: 0.5rem;
+    color: var(--accent-color);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+
+
+strong {
+    color: var(--highlight-color);
+    font-weight: bold;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+/* === Rules Sections === */
+#rule-scoringSection,
+#rule-jokersSection,
+#rule-functionalitySection {
+    border-top: 2px solid var(--border-color);
+    margin: 10px;
+    padding: 0;
+}
+
+ul {
+    padding-left: 1.5rem;
+}
+
+li {
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+/* === Button Container === */
+#rule-buttonContainer {
+    text-align: center;
+    margin: 0 0;
+}
+
+.play-button {
+    background: rgb(92, 136, 92);
+    color: var(--accent-color);
+    border: none;
+    border-radius: 6px;
+    padding: 15px 15px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.play-button:hover {
+    background: var(--green-btn-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }

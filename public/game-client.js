@@ -7,8 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
             - Use a button to buy/sell jokers
     */
     // Div "button" option
-    addStoreJokerListeners();
-    addJokerListeners();
+    // addStoreJokerListeners();
+    // addJokerListeners();
     // Button option
     addJokerButtons();
 
@@ -25,9 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function addJokerButtons() {
-        const jokerBuyButtons = document.querySelectorAll("#buyJokerBtn");
+        const jokerBuyButtons = document.querySelectorAll(".buyJokerBtn");
         jokerBuyButtons.forEach(b => b.addEventListener("click", processJokerBuy));
-        const jokerBurnButtons = document.querySelectorAll("#burnJokerBtn");
+        const jokerBurnButtons = document.querySelectorAll(".burnJokerBtn");
         jokerBurnButtons.forEach(b => b.addEventListener("click", processJokerBurn));
     }
 
@@ -77,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function processJokerBuy(event) {
+        console.log("BUYING JOKER");
         const joker = event.currentTarget;
         const jokerName = joker.dataset.name;
 
@@ -107,9 +108,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function processJokerBurn(event) {
+        console.log("BURNING JOKER");
         const joker = event.currentTarget;
         const jokerName = joker.dataset.name;
-
+        console.log(jokerName);
         try {
             const response = await fetch("/game/joker/sell", {
                 method: "POST",
@@ -214,31 +216,32 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateJokers(game) {
         let jokerStoreList = [];
         let jokerList = [];
+        console.log(game.jokers);
         game.jokerStore.forEach(j => {
-          let joker = `<div class="joker" data-name="${ j.name }">
-          <div id="jokerName">${ j.name }</div>
-          <div id="jokerRarity">${ j.rarity }</div>
-          <div id="jokerDescription">${ j.description }</div>
-          <div id="jokerCost">Cost: ${ j.cost }</div>
+            let joker = `<div class="joker" data-name="${j.name}">
+          <div class="jokerName">${j.name}</div>
+          <div class="jokerRarity">${j.rarity}</div>
+          <div class="jokerDescription">${j.description}</div>
+          <div class="jokerCost">Cost: ${j.cost}</div>
+          <button class="buyJokerBtn" data-name="${j.name}">Buy</button> 
           </div>
-          <button id="buyJokerBtn" data-name="${ j.name }">Buy</button> 
           `;
-          jokerStoreList.push(joker);
+            jokerStoreList.push(joker);
         });
         game.jokers.forEach(j => {
-          let joker = `<div class="joker" data-name="${ j.name }">
-          <div id="jokerName">${ j.name }</div>
-          <div id="jokerRarity">${ j.rarity }</div>
-          <div id="jokerDescription">${ j.description }</div>
+            let joker = `<div class="joker" data-name="${j.name}">
+          <div class="jokerName">${j.name}</div>
+          <div class="jokerRarity">${j.rarity}</div>
+          <div class="jokerDescription">${j.description}</div>
+          <button class="burnJokerBtn" data-name="${j.name}">Burn</button>
           </div>
-          <button id="burnJokerBtn" data-name="${ j.name }">Burn</button>
           `;
-          jokerList.push(joker);
+            jokerList.push(joker);
         });
         document.querySelector("#jokerStoreContainer").innerHTML = jokerStoreList.join("");
         document.querySelector("#jokerContainer").innerHTML = jokerList.join("");
-        addStoreJokerListeners();
-        addJokerListeners();
+        // addStoreJokerListeners();
+        // addJokerListeners();
         addJokerButtons();
     }
 
@@ -261,13 +264,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function updateGameInfo(game) {
-        document.querySelector("#roundIndicator").innerHTML = `Round: ${Math.min(game.round, 7)}/7`;
+        // Update text-based game info
+        //document.querySelector("#roundIndicator").innerHTML = `Round: ${Math.min(game.round, 7)}/7`;
         document.querySelector("#gameScore").innerHTML = `Score: ${game.score}`;
         document.querySelector("#gameMult").innerHTML = `Mult: x${game.mult}`;
         document.querySelector("#gameChips").innerHTML = `Chips: ${game.chips}`;
         document.querySelector("#gameDiscards").innerHTML = `Discards: ${game.discards}`;
-    }
 
+        // Update the round tracker dots
+        const roundTracker = document.querySelector("#roundTracker");
+        if (roundTracker) {
+            // Clear existing dots
+            roundTracker.innerHTML = '';
+
+            // Create new dots based on current game state
+            for (let i = 1; i <= 7; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'round-dot';
+
+                if (i < game.round) {
+                    dot.classList.add('completed');
+                } else if (i === game.round) {
+                    dot.classList.add('active');
+                }
+
+                roundTracker.appendChild(dot);
+            }
+        }
+    }
     function updateHighScore(highScore) {
         document.querySelector("#gameHighScore").innerHTML = `High Score: ${highScore}`
     }
