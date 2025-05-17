@@ -2,11 +2,17 @@ const express = require("express");
 const router = express.Router();
 const { Game } = require("../models/game");
 
+// Initialize the game
 const game = new Game();
-
 game.startGame();
 
+// Main route now shows rules page
 router.get("/", (req, res) => {
+  res.render("rules");
+});
+
+// Game page is now a separate route
+router.get("/play", (req, res) => {
   res.render("game", {
     game: game.state,
     highScore: req.session.highScore || 0
