@@ -335,10 +335,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelector("#controls").innerHTML = `
             <form id="saveScoreForm">
                 <input type="text" id="username" placeholder="Enter your username" required>
-                <button type="submit">Save Score</button>
+                <button type="submit" id ="saveButton">Save Score</button>
             </form>
             <button id="newGameBtn">New Game</button>`;
         document.querySelector("#saveScoreForm").addEventListener("submit", saveScore);
+        document.getElementById("saveButton").addEventListener("click", function () {
+            document.getElementById("leaderboardContainer").scrollIntoView({ behavior: "smooth" });
+        });
         document.querySelector("#newGameBtn").addEventListener("click", restartGame);
     }
 

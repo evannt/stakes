@@ -17,17 +17,19 @@
 }
 
 /* === Base Styling === */
+
 body {
-    margin: 0;
+    
     color: var(--text-color);
     line-height: 1.1;
     background: var(--gradient-bg);
+    min-height: 100vh;
 }
 
 /* === Main Container === */
 #gameContainer {
     max-width: 900px;
-
+    min-height: 165vh;
     height: 700px;
     margin: auto;
     padding: 20px;
@@ -114,12 +116,13 @@ h3 {
 #handScoreContainer {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    margin-left: 2%;
 }
 
 #handType {
     font-size: 1.5rem;
-    margin: 0;
+    margin-bottom: 0px;
+   
 }
 
 #scoreCalc {
@@ -127,7 +130,7 @@ h3 {
     align-items: center;
     gap: 5px;
     font-size: 1.2rem;
-    margin: 0;
+    margin-left: 3.5%;
 }
 
 #cardScoreContainer {
@@ -149,7 +152,7 @@ h3 {
 #cardContainer {
     display: flex;
     flex-wrap: wrap;
-    padding: 1.5rem;
+    padding: 1.3rem;
     gap: 0.5rem;
     height: var(--cardHeight);
     flex-grow: 1;
@@ -527,6 +530,7 @@ li {
     background-color: var(--panel-bg);
     border: 1px solid var(--border-color);
     border-radius: 8px;
+    min-height:450px;
 }
 
 #leaderboardContainer h2 {
