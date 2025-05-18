@@ -31,17 +31,10 @@ app.get("/", async (req, res) => {
     res.redirect("/game");
 });
 
-app.listen(port, () => {
-    console.log(`Cranky started at http://localhost:${port}`);
-});
 
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
-require('dotenv').config();
-
-// Mount the game router
 app.use('/game', gameRouter);
 
 async function startServer() {

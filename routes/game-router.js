@@ -84,17 +84,17 @@ router.get('/', (req, res) => {
 
 // Handle form submission to save score
 router.post('/save-score', async (req, res) => {
-  const { username, score } = req.body;
-  try {
-    // Basic validation
-    if (!username || !score || isNaN(score)) {
-      return res.status(400).json({ success: false, error: 'Invalid username or score' });
+    const { username, score } = req.body;
+    try {
+        // Basic validation
+        if (!username || !score || isNaN(score)) {
+            return res.status(400).json({ success: false, error: 'Invalid username or score' });
+        }
+        await db.saveScore(username, score);
+        res.json({ success: true });
+    } catch (error) {
+        res.status(400).json({ success: false, error: error.message });
     }
-    await db.saveScore(username, score);
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ success: false, error: 'Failed to save score' });
-  }
 });
 
 // API endpoint to fetch top scores

@@ -1,4 +1,5 @@
 const { MongoClient } = require('mongodb');
+require('dotenv').config();
 
 const uri = process.env.MONGO_CONNECTION_STRING;
 const client = new MongoClient(uri);
@@ -23,17 +24,22 @@ function getCollection() {
 }
 
 async function saveScore(username, score) {
-  try {
-    const collection = getCollection();
-    await collection.insertOne({
-      username,
-      score: Number(score),
-      createdAt: new Date()
-    });
-  } catch (error) {
-    console.error('Error saving score:', error);
-    throw error;
-  }
+    try {
+        const collection = getCollection();
+        // Check if username already exists
+        const existingUser = await collection.findOne({ username });
+        if (existingUser) {
+            throw new Error('Username already exists. Please choose a unique username.');
+        }
+        await collection.insertOne({
+            username,
+            score: Number(score),
+            createdAt: new Date()
+        });
+    } catch (error) {
+        console.error('Error saving score:', error);
+        throw error;
+    }
 }
 
 async function getTopScores(limit = 10) {

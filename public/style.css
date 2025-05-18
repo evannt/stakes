@@ -520,3 +520,58 @@ li {
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
+
+#leaderboardContainer {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+#leaderboardContainer h2 {
+    color: var(--accent-color);
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#leaderboard {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--panel-bg);
+}
+
+#leaderboard th {
+    background-color: var(--border-color);
+    color: var(--accent-color);
+    padding: 10px;
+    text-align: left;
+    font-weight: bold;
+}
+
+#leaderboard td {
+    padding: 10px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+#leaderboard tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+#leaderboard tr:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+#leaderboard th, #leaderboard td {
+    font-size: 1rem;
+}
+
+#leaderboard th:nth-child(1), #leaderboard td:nth-child(1) {
+    width: 70%;
+}
+
+#leaderboard th:nth-child(2), #leaderboard td:nth-child(2) {
+    width: 30%;
+    text-align: right;
+}

@@ -329,6 +329,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         addButtonListeners();
     }
 
+    //Form here
+    // <form id="saveScoreForm">
     function showNewGameControls() {
         document.querySelector("#controls").innerHTML = `
             <form id="saveScoreForm">
@@ -506,8 +508,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function saveScore(event) {
         event.preventDefault();
-        const username = document.getElementById("username").value;
-        const score = parseInt(document.getElementById("gameScore").textContent);
+        const username = document.getElementById("username").value.trim();
+        const scoreText = document.getElementById("gameScore").textContent;
+        const score = parseInt(scoreText.replace("Score: ", ""));
+
+        if (!username) {
+            alert("Please enter a valid username.");
+            return;
+        }
 
         try {
             const response = await fetch("/game/save-score", {
