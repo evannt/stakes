@@ -2,20 +2,23 @@ const express = require("express");
 const router = express.Router();
 const { Game } = require("../models/game");
 
-// Initialize the game
 const game = new Game();
 game.startGame();
 
-// Main route now shows rules page
 router.get("/", (req, res) => {
   res.render("rules");
 });
 
-// Game page is now a separate route
 router.get("/play", (req, res) => {
   res.render("game", {
     game: game.state,
     highScore: req.session.highScore || 0
+  });
+});
+
+router.get("/refresh", (req, res) => {
+  res.json({
+    hand: game.state.hand
   });
 });
 
@@ -29,19 +32,20 @@ router.get("/restart", async (req, res) => {
 
 router.get("/hand/play", async (req, res) => {
   const roundResult = await game.playHand();
-  // Update the high score once the game is over
   req.session.highScore = Math.max(req.session.highScore || 0, game.score);
   res.json({
     roundResult,
     game: game.state,
+    removedCards: roundResult.removedCards,
     highScore: req.session.highScore || 0
   });
 });
 
 router.get("/hand/discard", async (req, res) => {
-  await game.discardHand();
+  const discardedCards = await game.discardHand();
   res.json({
     game: game.state,
+    discardedCards: discardedCards
   });
 });
 

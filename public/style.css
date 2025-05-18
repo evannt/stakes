@@ -11,6 +11,9 @@
     --red-btn: #b23a3a;
     --red-btn-hover: #c74444;
     --panel-bg: rgba(25, 85, 60, 0.5);
+    --cardWidth: 80px;
+    --cardHeight: 112px;
+    font-size: 14px;
 }
 
 /* === Base Styling === */
@@ -56,10 +59,6 @@ h3 {
 }
 
 /* === Game Info === */
-
-
-
-
 #handType,
 #roundResult {
     font-weight: bold;
@@ -138,27 +137,128 @@ h3 {
     border: 1px solid var(--border-color);
 }
 
+#playContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: flex-start;
+    padding: 20px 0;
+}
+
 #cardContainer {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    padding: 10px;
-    height: 115px;
+    padding: 1.5rem;
+    gap: 0.5rem;
+    height: var(--cardHeight);
+    flex-grow: 1;
+}
+
+#buyJokerBtn {
+    color: green;
+}
+
+#burnJokerBtn {
+    color: red;
+}
+
+#deckContainer {
+    position: relative;
+    margin-left: 1rem;
+    width: var(--cardWidth);
+    height: var(--cardHeight);
+}
+
+.deckCard {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: center bottom;
+    transition: transform 0.3s ease-in-out;
+} 
+
+#deckContainer:hover .deckCard {
+    transform: none;
+}
+
+.deckCard:nth-child(1) {
+    transform: rotate(-2deg) translateY(0px);
+}
+
+.deckCard:nth-child(2) {
+    transform: rotate(2deg) translateY(-2px);
+}
+
+.deckCard:nth-child(3) {
+    transform: rotate(1deg) translateY(-2px);
+}
+
+.deckCard:nth-child(4) {
+    transform: rotate(-1deg) translateY(-2px);
+}
+
+.deckCard:nth-child(5) {
+    transform: rotate(0deg) translateY(-5px);
 }
 
 .card {
-    width: 85px;
-    height: 100px;
-    border-radius: 6px;
+    --cardRotateX: 0deg;
+    --cardRotateY: 0deg;
+    --cardTranslateY: 0px;
+    --cardTranslateX: 0px;
+    opacity: 1;
+    width: var(--cardWidth);
+    height: var(--cardHeight);
     position: relative;
-    transition: 0.25s ease;
-    cursor: pointer;
+    transform: translateY(var(--cardTranslateY));
+    z-index: 1;
+}
+
+.card:hover, .card[data-held="true"] {
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.card:hover {
+    --cardTranslateY: -10px;
+    transform:
+        perspective(1000px)
+        rotateY(var(--cardRotateX))
+        rotateX(var(--cardRotateY))
+        translateY(var(--cardTranslateY));
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    z-index: 2;
 }
 
 .card[data-held="true"] {
-    transform: translateY(-10px);
+    --cardTranslateY: -30px;
+    z-index: 3;
     filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.6));
+}
+
+.card.flyIn {
+    position: absolute;
+    transform: translate(0, 0);
+    transition: transform 0.4s ease-out;
+    z-index: 10;
+}
+
+.card.flyOut {
+    transform:
+        translateX(100vw)
+        rotate(180deg);
+    transition: transform 0.5s ease-in, opacity 0.5s ease-in;
+    opacity: 1;
+    z-index: 10;
+}
+
+@keyframes cardShake {
+    0% { transform: translateY(var(--cardTranslateY)) rotate(0deg); }
+    25% { transform: translateY(var(--cardTranslateY)) rotate(4deg); }
+    75% { transform: translateY(var(--cardTranslateY)) rotate(-4deg); }
+    100% { transform: translateY(var(--cardTranslateY)) rotate(0deg); }
 }
 
 /* === Controls === */
@@ -369,8 +469,6 @@ h3 {
     color: var(--accent-color);
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
 }
-
-
 
 strong {
     color: var(--highlight-color);

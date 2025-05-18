@@ -1,27 +1,30 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    await flyCardsInOnReload();
     addCardListeners();
     addButtonListeners();
-    /*
-        There are some options here for the joker buttons:
-            - Use the "joker" div to buy/sell jokers
-            - Use a button to buy/sell jokers
-    */
-    // Div "button" option
-    // addStoreJokerListeners();
-    // addJokerListeners();
-    // Button option
     addJokerButtons();
 
     function addCardListeners() {
         const cards = document.querySelectorAll(".card");
         cards.forEach(c => {
             c.addEventListener("click", processCardClick);
+            c.addEventListener("mousemove", e => {
+                rotateElement(e, c, c.offsetWidth, c.offsetHeight);
+            });
+            c.addEventListener("mouseleave", () => {
+                c.style.setProperty("--cardRotateX", "0deg");
+                c.style.setProperty("--cardRotateY", "0deg");
+            })
         });
     }
 
     function addButtonListeners() {
-        document.querySelector("#playHandBtn").addEventListener("click", processPlayHand);
-        document.querySelector("#discardBtn").addEventListener("click", processDiscard);
+        if (document.querySelector("#playHandBtn") && document.querySelector("#discardBtn")) {
+            document.querySelector("#playHandBtn").addEventListener("click", processPlayHand);
+            document.querySelector("#discardBtn").addEventListener("click", processDiscard);
+        } else if (document.querySelector("#newGameBtn")) {
+            document.querySelector("#newGameBtn").addEventListener("click", restartGame);
+        }
     }
 
     function addJokerButtons() {
@@ -29,21 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
         jokerBuyButtons.forEach(b => b.addEventListener("click", processJokerBuy));
         const jokerBurnButtons = document.querySelectorAll(".burnJokerBtn");
         jokerBurnButtons.forEach(b => b.addEventListener("click", processJokerBurn));
-    }
-
-    // Here is where we can use the div as the joker button and maybe have a hover effect showing the price
-    function addStoreJokerListeners() {
-        const jokers = document.querySelectorAll(".storeJoker");
-        jokers.forEach(j => {
-            j.addEventListener("click", processJokerBuy);
-        });
-    }
-
-    function addJokerListeners() {
-        const jokers = document.querySelectorAll(".joker");
-        jokers.forEach(j => {
-            j.addEventListener("click", processJokerBurn);
-        });
     }
 
     async function processCardClick(event) {
@@ -77,7 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function processJokerBuy(event) {
-        console.log("BUYING JOKER");
         const joker = event.currentTarget;
         const jokerName = joker.dataset.name;
 
@@ -108,10 +95,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function processJokerBurn(event) {
-        console.log("BURNING JOKER");
         const joker = event.currentTarget;
         const jokerName = joker.dataset.name;
-        console.log(jokerName);
         try {
             const response = await fetch("/game/joker/sell", {
                 method: "POST",
@@ -148,9 +133,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const result = await response.json();
 
-            updateHand(result.game);
+            if (result.roundResult.handPlayed) {
+                await raisePlayedCards();
+                await shakeCards();
+                await sleep(150);
+                showRoundScore(result.roundResult);
+                playSound("/sounds/addpokerchips.mp3");
+                await sleep(850);
+                await descendPlayedCards();
+                await displayCardsAnimation(result.game.hand, result.removedCards);
+            }
             updateHandScore(result.game);
-            showRoundScore(result.roundResult);
             updateJokers(result.game);
             updateGameInfo(result.game);
             updateHighScore(result.highScore);
@@ -159,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 showNewGameControls();
             }
         } catch (error) {
-            console.error(`Error selecting card (${id}): ${error}`);
+            console.error(`Error playing hand: ${error}`);
         }
     }
 
@@ -173,12 +166,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const discardResult = await response.json();
 
-            updateHand(discardResult.game);
+            // Added cards are always at the end of the hand
+            const addedCards = discardResult.game.hand.slice(-discardResult.discardedCards.length);
+            if (discardResult.discardedCards.length > 0) {
+                await discardCardsAnimation(addedCards, discardResult.discardedCards);
+            }
             updateGameInfo(discardResult.game);
             updateHandScore(discardResult.game);
             updateSelectedCards(discardResult.game);
         } catch (error) {
-            console.error(`Error selecting card (${id}): ${error}`);
+            console.error(`Error discarding card: ${error}`);
         }
     }
 
@@ -192,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const restartResult = await response.json();
 
-            updateHand(restartResult.game);
+            await displayCardsAnimation(restartResult.game.hand, []);
             updateGameInfo(restartResult.game);
             updateSelectedCards(restartResult.game);
             updateJokers(restartResult.game);
@@ -200,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
             showGameControls();
             removeRoundScore();
         } catch (error) {
-            console.error(`Error selecting card (${id}): ${error}`);
+            console.error(`Error restarting game: ${error}`);
         }
     }
 
@@ -216,7 +213,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateJokers(game) {
         let jokerStoreList = [];
         let jokerList = [];
-        console.log(game.jokers);
         game.jokerStore.forEach(j => {
             let joker = `<div class="joker" data-name="${j.name}">
           <div class="jokerName">${j.name}</div>
@@ -245,15 +241,32 @@ document.addEventListener("DOMContentLoaded", () => {
         addJokerButtons();
     }
 
-    function updateHand(game) {
-        let cardList = [];
-        game.hand.forEach(c => {
-            let card = `<div class="card" data-id="${c.id}" data-held=${c.selected ? "true" : "false"}>
-            <img id="card-image" src="${c.image}" alt="${c.rank} of ${c.suit}" width="80" height="112">
-            </div>`;
-            cardList.push(card);
+    async function playHandAnimation() {
+        await raisePlayedCards();
+        await sleep(750);
+
+        await sleep(500);
+        await descendPlayedCards();
+    }
+
+    async function displayCardsAnimation(addedCards, removedCards) {
+        // Animate cards flying away
+        await flyCardsOut(removedCards);
+
+        // Animate cards being dealt
+        await flyCardsIn(addedCards, 0);
+        addCardListeners();
+    }
+
+    async function discardCardsAnimation(addedCards, removedCards) {
+        // Fly out the discarded cards
+        await flyCardsOut(removedCards);
+        // Adjust div ids to match hand alignment
+        document.querySelectorAll(".card").forEach((c, i) => {
+            c.setAttribute("data-id", `${i + 1}`);
         });
-        document.querySelector("#cardContainer").innerHTML = cardList.join("");
+        // Fly in the newly drawn cards
+        await flyCardsIn(addedCards, 7 - removedCards.length);
         addCardListeners();
     }
 
@@ -319,4 +332,169 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector("#controls").innerHTML = `<button id="newGameBtn">New Game</button>`;
         document.querySelector("#newGameBtn").addEventListener("click", restartGame);
     }
+
+    function rotateElement(event, element, width, height) {
+        const rect = element.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        const middleX = width / 2;
+        const middleY = height / 2;
+        const degrees = 15;
+        const offsetX = degrees * ((x - middleX) / middleX);
+        const offsetY = degrees * ((y - middleY) / middleY);
+        element.style.setProperty("--cardRotateX", `${offsetX}deg`);
+        element.style.setProperty("--cardRotateY", `${-offsetY}deg`);
+    }
+
+    function flyCardOut(card) {
+        card.offsetHeight;
+        card.classList.add("flyOut");
+        setTimeout(() => {
+            card.remove();
+        }, 500);
+    }
+
+    async function flyCardsOut(removedCards) {
+        const removedCardIds = removedCards.map(c => `${c.id}`);
+        const cards = Array.from(document.querySelectorAll(".card")).reverse()
+            .filter(c => removedCardIds.includes(c.dataset.id));
+
+        cards.forEach(c => {
+            c.setAttribute("data-held", "false");
+        });
+        
+        const flyOutAnimationPromises = cards.map((c, i) => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    flyCardOut(c);
+                    playSound("/sounds/cardremoved.mp3");
+                    const animationDuration = 500;
+                    setTimeout(resolve, animationDuration);
+                }, parseInt(c.dataset.id) * 80);
+            });
+        });
+        
+        return Promise.all(flyOutAnimationPromises);
+    }
+
+    async function flyCardsInOnReload() {
+        try {
+            const response = await fetch("/game/refresh");
+
+            if (!response.ok) {
+                throw new Error(`HTTP error, Status: ${response.status}`);
+            }
+            const refreshResult = await response.json();
+            await flyCardsIn(refreshResult.hand, []);
+        } catch (error) {
+            console.error(`Error reloading: ${error}`);
+        }
+    }
+
+    async function flyCardsIn(addedCards, existingCards) {
+        const cardContainer = document.querySelector("#cardContainer");
+        const deckRect = document.querySelector("#deckContainer").getBoundingClientRect();
+        const cardsRect = cardContainer.getBoundingClientRect();
+
+        const flyInAnimationPromises = addedCards.map((c, i) => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    const cardElement = createCardElement(c);
+                    cardElement.classList.add("flyIn");
+                    const deckX = deckRect.left - cardsRect.left;
+                    const deckY = deckRect.top - cardsRect.top;
+                    cardElement.style.transform = `translate(${deckX}px, ${deckY}px) rotate(20deg)`;
+                    cardContainer.appendChild(cardElement);
+                    cardElement.offsetHeight;
+
+                    const cardWidth = cardElement.offsetWidth;
+                    const cardHeight = cardElement.offsetHeight;
+                    const startIndex = existingCards + i;
+                    const cardsPerRow = Math.floor(cardsRect.width / cardWidth);
+                    const row = Math.floor(startIndex / cardsPerRow);
+                    const col = startIndex % cardsPerRow;
+                    
+                    const finalX = col * (cardWidth + 10);
+                    const finalY = row * (cardHeight + 10);
+                    
+                    cardElement.style.transform = `translate(${finalX}px, ${finalY}px) rotate(0deg)`;
+                    playSound("/sounds/dealcard.mp3");
+                    setTimeout(() => {
+                        cardElement.classList.remove("flyIn");
+                        cardElement.style.transform = "";
+                        cardElement.style.position = "relative";
+                        resolve();
+                    }, 400);
+                }, i * 80);
+            });
+        });
+        return Promise.all(flyInAnimationPromises);
+    }
+
+    async function raisePlayedCards() {
+        const cards = Array.from(document.querySelectorAll(".card"))
+            .filter(c => c.getAttribute("data-held") === "true");
+        const raiseAnimationPromises = cards.map((c, i) => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    const raiseAmount = -c.offsetHeight * 0.7;
+                    c.style.setProperty("--cardTranslateY", `${raiseAmount}px`);
+                    setTimeout(() => {
+                        resolve();
+                    }, 500);
+                }, i * 250);
+            });
+        });
+        return Promise.all(raiseAnimationPromises);
+    }
+
+    async function shakeCards() {
+        const cards = Array.from(document.querySelectorAll(".card"))
+            .filter(c => c.getAttribute("data-held") === "true");
+        const shakeAnimationPromises = cards.map((c, i) => {
+            return new Promise((resolve, reject) => {
+                c.style.animation = "cardShake 0.2s ease-in";
+                setTimeout(() => {
+                    resolve();
+                }, 500);
+            });
+        });
+        return Promise.all(shakeAnimationPromises);
+    }
+
+    async function descendPlayedCards() {
+        const cards = Array.from(document.querySelectorAll(".card"))
+            .filter(c => c.getAttribute("data-held") === "true");
+        const descendAnimationPromises = cards.map((c, i) => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    c.style.setProperty("--cardTranslateY", `0px`);
+                    setTimeout(() => {
+                        resolve();
+                    }, 500);
+                }, i * 250);
+            });
+        });
+        return Promise.all(descendAnimationPromises);
+    }
+
+    function createCardElement(card) {
+        const cardElement = document.createElement("div");
+        cardElement.className = "card";
+        cardElement.setAttribute("data-id", card.id);
+        cardElement.setAttribute("data-held", card.selected ? "true" : "false");
+        cardElement.innerHTML = `<img id="card-image" src="${card.image}" alt="${card.rank} of ${card.suit}" width="80" height="112">`;
+        return cardElement;
+    }
+
+    async function sleep(duration) {
+        return new Promise(resolve => setTimeout(resolve, duration));
+    }
+
+    function playSound(path) {
+        const audio = new Audio(path);
+        audio.volume = 0.75;
+        audio.play();
+    }
+
 });
