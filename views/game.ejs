@@ -8,22 +8,16 @@
   <script defer src="/game-client.js"></script>
   <title>Cranky</title>
 </head>
-
-<body>
-  <div id="gameContainer">
-    <h1 id="headers">GAME NAME</h1>
-
-
-    <!-- Wrap roundIndicator and scoreContainer together -->
-    <div id="roundScoreRow">
-      <!-- Round indicator dots -->
-      <div class="round-indicator" id="roundTracker">
-        <% for(let i=1; i <=7; i++) { %>
-          <div class="round-dot <%= i < game.round ? 'completed' : (i === Math.min(game.round, 7) ? 'active' : '') %>">
-          </div>
+  <body>
+    <div id="gameContainer">
+      <h1 id="headers">GAME NAME</h1>
+      <div id="roundScoreRow">
+        <div class="round-indicator" id="roundTracker">
+          <% for(let i=1; i <=7; i++) { %>
+            <div class="round-dot <%= i < game.round ? 'completed' : (i === Math.min(game.round, 7) ? 'active' : '') %>"></div>
           <% }; %>
+        </div>
       </div>
-    </div>
     <div id="scoreContainer">
       <div id="gameScore">Score: <%= game.score %>
       </div>
@@ -36,8 +30,6 @@
       <div id="gameHighScore">High Score: <%= highScore %>
       </div>
     </div>
-
-
     <div id="roundResult">
       <div id="roundScore"></div>
       <div id="roundChips"></div>
@@ -56,21 +48,26 @@
           </div>
         </div>
       </div>
-      <div id="cardContainer">
-        <% game.hand.forEach(c=> { %>
-          <div class="card" data-id="<%= c.id %>" data-held="<%= c.selected ? " true" : "false" %>">
-            <img id="card-image" src="<%= c.image %>" alt="<%= c.rank %> of <%= c.suit %>" width="80" height="112">
-          </div>
-          <% }); %>
+      <div id="playContainer">
+        <div id="deckContainer">
+          <img class="deckCard" src="https://deckofcardsapi.com/static/img/back.png" width="80" height="112" alt="Back of Card">
+          <img class="deckCard" src="https://deckofcardsapi.com/static/img/back.png" width="80" height="112" alt="Back of Card">
+          <img class="deckCard" src="https://deckofcardsapi.com/static/img/back.png" width="80" height="112" alt="Back of Card">
+          <img class="deckCard" src="https://deckofcardsapi.com/static/img/back.png" width="80" height="112" alt="Back of Card">
+          <img class="deckCard" src="https://deckofcardsapi.com/static/img/back.png" width="80" height="112" alt="Back of Card">
+        </div>
+        <div id="cardContainer">
+        </div>
       </div>
     </div>
-
     <div id="controls">
-      <button id="playHandBtn">Play Hand</button>
-      <button id="discardBtn">Discard</button>
-
+      <% if (game.round > 7) { %>
+        <button id="newGameBtn">New Game</button>
+      <% } else { %>
+        <button id="playHandBtn">Play Hand</button>
+        <button id="discardBtn">Discard</button>
+      <% } %>
     </div>
-
     <div id="jokerSection">
       <div class="store-section">
         <h3 id="headers">Joker Store</h3>
@@ -113,10 +110,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Reset Button added at the bottom -->
-
   </div>
 </body>
-
 </html>

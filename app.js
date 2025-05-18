@@ -13,6 +13,7 @@ app.set("views", path.join(__dirname, "views"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/sounds", express.static(path.join(__dirname, "sounds")));
 app.use(session({
     secret: process.env.SESSION_KEY,
     resave: false,

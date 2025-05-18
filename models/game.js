@@ -36,7 +36,7 @@ class Card {
         this.suit = suit;
         this.image = image;
         this.selected = selected;
-}
+    }
 
     get value() {
         switch (this.rank) {
@@ -252,6 +252,7 @@ class Game {
     async playHand() {
         let handScore;
         let currentChips = this.chips;
+        let currentCards = this.hand;
         const selectedCards = this.hand.filter(c => c.selected).length;
 
         // Don't process empty hands
@@ -275,6 +276,7 @@ class Game {
             handPlayed: selectedCards != 0,
             roundScore: handScore ? handScore.totalScore : 0,
             roundChips: this.chips - currentChips,
+            removedCards: selectedCards != 0 ? currentCards : [] // used for animation
         }; 
     }
 
@@ -460,12 +462,15 @@ class Game {
     async discardHand() {
         // remove selected cards and add the same number of cards
         const safeCards = this.hand.filter(c => !c.selected);
-        const discardCount = this.hand.length - safeCards.length; 
+        const discardCards = this.hand.filter(c => c.selected);
+        const discardCount = discardCards.length; //this.hand.length - safeCards.length; 
         if (this.discards >= discardCount) {
             this.discards -= discardCount;
             this.hand = safeCards;
             await this.drawCards(discardCount);
+            return discardCards;
         }
+        return [];
     }
 
     get state() {
