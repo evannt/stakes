@@ -1,2 +1,2 @@
 # Fevari Poker
-# Group Members: Evan Thompson (evant), Ari Kaplan (akapla11)
+# Group Members: Feenet Oli (foli), Evan Thompson (evant), Ari Kaplan (akapla11)
