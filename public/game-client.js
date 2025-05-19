@@ -246,7 +246,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         event.preventDefault();
         const username = document.getElementById("username").value.trim();
         const scoreText = document.getElementById("gameScore").innerHTML;
-        console.log(scoreText);
         const score = parseInt(scoreText.replace("Score: ", ""));
 
         if (!username) {

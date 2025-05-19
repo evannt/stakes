@@ -444,9 +444,9 @@ class Game {
             this.jokers.push(joker);
             this.chips -= joker.cost;
             // Apply the Joker effect if it pertains to the game (e.g. mult)
-            this.jokers
-                .filter(j => j.effectType === JokerEffectType.GAME_EFFECT)
-                .forEach(j => j.effect(this));
+            if (joker.effectType === JokerEffectType.GAME_EFFECT) {
+                joker.effect(this);
+            }
         }
         return true;
     }
