@@ -17,7 +17,7 @@ const HandType = Object.freeze({
     FLUSH : { type: "Flush", baseScore: 35, mult: 4, chips: 2 },
     STRAIGHT : { type: "Straight", baseScore: 30, mult: 4, chips: 2 }, 
     THREE_OF_A_KIND : { type: "Three of a Kind", baseScore: 30, mult: 3, chips: 2 }, 
-    TWO_PAIR :{ type: "Two Pair", baseScore: 20, mult: 2, chips: 1 }, 
+    TWO_PAIR :{ type: "Two Pair", baseScore: 20, mult: 2, chips: 2 }, 
     PAIR : { type: "Pair", baseScore: 10, mult: 2, chips: 1 }, 
     HIGH_CARD : { type: "High Card", baseScore: 5, mult: 1, chips: 1 }, 
 });
@@ -112,7 +112,7 @@ class Game {
                 return cards.filter(card => card.rank === "KING" || card.rank === "QUEEN" || card.rank === "JACK").reduce((acc, card) => acc + card.value, 0);
             }),
             new Joker("Number Cruncher", Rarity.COMMON, "Numbered cards are worth x3", 1, JokerEffectType.HAND_EFFECT, (cards, handType) => {
-                return cards.filter(card => card.rank !== "KING" && card.rank !== "QUEEN" && card.rank !== "JACK").reduce((acc, card) => acc + 2 * card.value, 0);
+                return cards.filter(card => card.rank !== "KING" && card.rank !== "QUEEN" && card.rank !== "JACK" && card.rank !== "ACE").reduce((acc, card) => acc + 2 * card.value, 0);
             }),
             new Joker("Everybody Say Love", Rarity.COMMON, "Hands with Heart suit give +2 mult", 1, JokerEffectType.MULT_EFFECT, (cards, handType) => {
                 return cards.filter(card => card.suit === "HEARTS").length > 0 ? 2 : 0;
@@ -185,10 +185,10 @@ class Game {
             }),
         ],
         [Rarity.LEGENDARY] : [
-            new Joker("A", Rarity.LEGENDARY, "Each Heart gives +10 mult", 3, JokerEffectType.MULT_EFFECT, (cards, handType) => {
+            new Joker("True Love", Rarity.LEGENDARY, "Each Heart gives +10 mult", 3, JokerEffectType.MULT_EFFECT, (cards, handType) => {
                 return cards.filter(card => card.suit === "HEARTS").length * 10;
             }),
-            new Joker("Memory Leak(F)", Rarity.LEGENDARY, "Replaces all current jokers with rare jokers", 3, JokerEffectType.GAME_EFFECT, (game) => {
+            new Joker("Memory Leak", Rarity.LEGENDARY, "Replaces all current jokers with rare jokers", 3, JokerEffectType.GAME_EFFECT, (game) => {
                 game.jokers = [];
                 for (let i = 0; i < Game.#MAX_JOKERS; i++) {
                     // Obtain a random, non held rare Jokers
@@ -196,7 +196,7 @@ class Game {
                     game.jokers.push(jokerPool[Math.floor(Math.random() * jokerPool.length)]);
                 }
             }),
-            new Joker("Perfect Hashing(E)", Rarity.LEGENDARY, "Full hands with distinct ranks give +20 mult", 3, JokerEffectType.MULT_EFFECT, (cards, handType) => {
+            new Joker("Perfect Hashing", Rarity.LEGENDARY, "Full hands with distinct ranks give +20 mult", 3, JokerEffectType.MULT_EFFECT, (cards, handType) => {
                 const rankCounts = {};
                 for (const card of cards) {
                     rankCounts[card.rank] = (rankCounts[card.rank] || 0) + 1;
@@ -222,16 +222,16 @@ class Game {
         this.hand = [];
         this.jokers = [];
         this.jokerStore = [];
-        this.score = 0; // rename to chips
-        this.chips = 1; // rename to money
+        this.score = 0;
+        this.chips = 1;
         this.discards = 3,
         this.mult = 1;
         this.round = 1;
+        this.scoreSaved = false;
     }
 
     async startGame() {
         await this.newDeck();
-        // await this.newCards();
         await this.drawCards();
         this.loadJokers();
     }
@@ -241,11 +241,12 @@ class Game {
         this.hand = [];
         this.jokers = [];
         this.jokerStore = [];
-        this.score = 0; // rename to chips
-        this.chips = 1; // rename to money
+        this.score = 0;
+        this.chips = 1;
         this.discards = 3,
         this.mult = 1;
         this.round = 1;
+        this.scoreSaved = false;
         await this.startGame();
     }
 
@@ -363,7 +364,7 @@ class Game {
         const cardScore = handType === HandType.HIGH_CARD 
             ? cards.reduce((score, card) => card.value > score ? card.value : score, 0)
             : cards.reduce((score, card) => score + card.value, 0);
-        // Applying different joker effects
+
         const jokerHandScore = this.jokers
             .filter(j => j.effectType === JokerEffectType.HAND_EFFECT)
             .reduce((acc, joker) => acc + joker.effect(cards, handType), 0);
@@ -473,6 +474,10 @@ class Game {
         return [];
     }
 
+    setScoreSaved() {
+        this.scoreSaved = true;
+    }
+
     get state() {
         const scoreInfo = this.getHandScore();
         return {
@@ -488,7 +493,8 @@ class Game {
             handType: scoreInfo.handType.type,
             handBaseScore: scoreInfo.baseScore,
             handMult: scoreInfo.handMult,
-            handChips: scoreInfo.handChips
+            handChips: scoreInfo.handChips,
+            scoreSaved: this.scoreSaved 
         };
     }
 }

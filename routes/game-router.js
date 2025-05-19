@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { Game } = require("../models/game");
-const db = require('../models/db'); 
+const db = require("../models/db"); 
 
 const game = new Game();
 game.startGame();
@@ -77,43 +77,36 @@ router.post("/joker/sell", (req, res) => {
   });
 });
 
-// Example route for your game page (assuming it has the form)
-router.get('/', (req, res) => {
-  res.render('game'); // Render your game page with the form
-});
-
-// Handle form submission to save score
-router.post('/save-score', async (req, res) => {
+router.post("/save-score", async (req, res) => {
     const { username, score } = req.body;
     try {
-        // Basic validation
-        if (!username || !score || isNaN(score)) {
-            return res.status(400).json({ success: false, error: 'Invalid username or score' });
+        if (!username || username.length >= 32 || !score || isNaN(score)) {
+            return res.status(400).json({ success: false, error: "Invalid username or score" });
         }
         await db.saveScore(username, score);
         res.json({ success: true });
+        game.setScoreSaved();
     } catch (error) {
+      console.error(`Error while attempting to save score: ${error}`);
         res.status(400).json({ success: false, error: error.message });
     }
 });
 
-// API endpoint to fetch top scores
-router.get('/api/leaderboard', async (req, res) => {
+router.get("/leaderboard/topscores", async (req, res) => {
   try {
     const topScores = await db.getTopScores();
     res.json(topScores);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch leaderboard' });
+    res.status(500).json({ error: "Failed to fetch leaderboard" });
   }
 });
 
-// Optional: Render a leaderboard page
-router.get('/leaderboard', async (req, res) => {
+router.get("/leaderboard", async (req, res) => {
   try {
     const topScores = await db.getTopScores();
-    res.render('leaderboard', { topScores });
+    res.render("leaderboard", { topScores });
   } catch (error) {
-    res.status(500).send('Error fetching leaderboard');
+    res.status(500).send("Error fetching leaderboard");
   }
 });
 

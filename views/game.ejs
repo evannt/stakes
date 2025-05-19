@@ -4,17 +4,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="/icon/favicon.ico">
   <link rel="stylesheet" href="/style.css">
   <script defer src="/game-client.js"></script>
-  <title>Cranky</title>
+  <title>Fevari Poker</title>
 </head>
   <body>
     <div id="gameContainer">
-      <h1 id="headers">GAME NAME</h1>
+      <h1 id="headers">Fevari Poker</h1>
       <div id="roundScoreRow">
         <div class="round-indicator" id="roundTracker">
           <% for(let i=1; i <=7; i++) { %>
-            <div class="round-dot <%= i < game.round ? 'completed' : (i === Math.min(game.round, 7) ? 'active' : '') %>"></div>
+            <div class="round-dot <%= i < game.round ? "completed" : (i === Math.min(game.round, 7) ? "active" : "") %>"></div>
           <% }; %>
         </div>
       </div>
@@ -62,14 +63,21 @@
     </div>
     <div id="controls">
       <% if (game.round > 7) { %>
+        <% if (!game.scoreSaved) { %>
+        <form id="saveScoreForm">
+          <input type="text" id="username" placeholder="Enter your username" required>
+          <button type="submit" id="saveButton">Save Score</button>
+        </form>
+        <% } %>
         <button id="newGameBtn">New Game</button>
       <% } else { %>
-        <button id="playHandBtn">Play Hand</button>
-        <button id="discardBtn">Discard</button>
+        <button id="dealCardsBtn">Deal Cards</button>
+        <!-- <button id="playHandBtn">Play Hand</button>
+        <button id="discardBtn">Discard</button> -->
       <% } %>
     </div>
     <div id="jokerSection">
-      <div class="store-section">
+      <div>
         <h3 id="headers">Joker Store</h3>
         <div id="jokerStoreContainer">
           <% game.jokerStore.forEach(j=> { %>
@@ -83,14 +91,15 @@
               <div class="jokerDescription">
                 <%= j.description %>
               </div>
-              <div class="jokerCost">Cost: <%= j.cost %>
+              <div class="jokerCost">
+                Cost: <%= j.cost %>
               </div>
               <button class="buyJokerBtn" data-name="<%= j.name %>">Buy</button>
             </div>
-            <% }); %>
+          <% }); %>
         </div>
       </div>
-      <div class="player-joker-section">
+      <div>
         <h3 id="headers">My Jokers</h3>
         <div id="jokerContainer">
           <% game.jokers.forEach(j=> { %>
@@ -106,21 +115,21 @@
               </div>
               <button class="burnJokerBtn" data-name="<%= j.name %>">Burn</button>
             </div>
-            <% }); %>
+          <% }); %>
         </div>
       </div>
     </div>
     <div id="leaderboardContainer">
         <h2>Leaderboard</h2>
         <table id="leaderboard">
-            <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>Score</th>
-                </tr>
-            </thead>
-            <tbody id="leaderboardBody">
-            </tbody>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody">
+          </tbody>
         </table>
     </div>
   </div>

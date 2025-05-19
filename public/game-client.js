@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
-    await flyCardsInOnReload();
-    addCardListeners();
+    // await flyCardsInOnReload();
+    await updateLeaderboard();
     addButtonListeners();
     addJokerButtons();
 
@@ -19,13 +19,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function addButtonListeners() {
+        if (document.querySelector("#dealCardsBtn")) {
+            document.querySelector("#dealCardsBtn").addEventListener("click", flyCardsInOnReload);
+        }
         if (document.querySelector("#playHandBtn") && document.querySelector("#discardBtn")) {
             document.querySelector("#playHandBtn").addEventListener("click", processPlayHand);
             document.querySelector("#discardBtn").addEventListener("click", processDiscard);
         } else if (document.querySelector("#newGameBtn")) {
             document.querySelector("#newGameBtn").addEventListener("click", restartGame);
         }
-        document.getElementById("saveScoreForm").addEventListener("submit", saveScore);
     }
 
     function addJokerButtons() {
@@ -139,15 +141,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                 await shakeCards();
                 await sleep(150);
                 showRoundScore(result.roundResult);
+                updateGameInfo(result.game);
+                updateHighScore(result.highScore);
                 playSound("/sounds/addpokerchips.mp3");
                 await sleep(850);
                 await descendPlayedCards();
                 await displayCardsAnimation(result.game.hand, result.removedCards);
+                updateHandScore(result.game);
             }
-            updateHandScore(result.game);
             updateJokers(result.game);
-            updateGameInfo(result.game);
-            updateHighScore(result.highScore);
 
             if (result.roundResult.gameOver) {
                 showNewGameControls();
@@ -237,17 +239,59 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
         document.querySelector("#jokerStoreContainer").innerHTML = jokerStoreList.join("");
         document.querySelector("#jokerContainer").innerHTML = jokerList.join("");
-        // addStoreJokerListeners();
-        // addJokerListeners();
         addJokerButtons();
     }
 
-    async function playHandAnimation() {
-        await raisePlayedCards();
-        await sleep(750);
+    async function saveScore(event) {
+        event.preventDefault();
+        const username = document.getElementById("username").value.trim();
+        const scoreText = document.getElementById("gameScore").innerHTML;
+        console.log(scoreText);
+        const score = parseInt(scoreText.replace("Score: ", ""));
 
-        await sleep(500);
-        await descendPlayedCards();
+        if (!username) {
+            alert("Please enter a valid username");
+            return;
+        }
+
+        try {
+            const response = await fetch("/game/save-score", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, score })
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                await updateLeaderboard();
+                removeLeaderboardForm();
+            }
+        } catch (error) {
+            console.error("Error saving score:", error);
+            alert("An error occurred while trying to save your score.");
+        }
+    }
+
+    async function updateLeaderboard() {
+        try {
+            const response = await fetch("/game/leaderboard/topscores");
+            const topScores = await response.json();
+            displayLeaderboard(topScores);
+        } catch (error) {
+            console.error(`Error fetching leaderboard: ${error}`);
+        }
+    }
+
+    function displayLeaderboard(topScores) {
+        const tbody = document.querySelector("#leaderboardBody");
+        tbody.innerHTML = "";
+        topScores.forEach(entry => {
+            const row = `<tr>
+            <td>${entry.username}</td>
+            <td>${entry.score}</td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
     }
 
     async function displayCardsAnimation(addedCards, removedCards) {
@@ -278,20 +322,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function updateGameInfo(game) {
-        // Update text-based game info
-        //document.querySelector("#roundIndicator").innerHTML = `Round: ${Math.min(game.round, 7)}/7`;
         document.querySelector("#gameScore").innerHTML = `Score: ${game.score}`;
         document.querySelector("#gameMult").innerHTML = `Mult: x${game.mult}`;
         document.querySelector("#gameChips").innerHTML = `Chips: ${game.chips}`;
         document.querySelector("#gameDiscards").innerHTML = `Discards: ${game.discards}`;
 
-        // Update the round tracker dots
         const roundTracker = document.querySelector("#roundTracker");
         if (roundTracker) {
-            // Clear existing dots
             roundTracker.innerHTML = "";
 
-            // Create new dots based on current game state
             for (let i = 1; i <= 7; i++) {
                 const dot = document.createElement("div");
                 dot.className = "round-dot";
@@ -306,6 +345,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         }
     }
+
     function updateHighScore(highScore) {
         document.querySelector("#gameHighScore").innerHTML = `High Score: ${highScore}`
     }
@@ -322,6 +362,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelector("#roundChips").innerHTML = ``;
     }
 
+    function removeLeaderboardForm() {
+        document.querySelector("#controls").innerHTML = `<button id="newGameBtn">New Game</button>`;
+    }
+
     function showGameControls() {
         document.querySelector("#controls").innerHTML = `
             <button id="playHandBtn">Play Hand</button>
@@ -329,18 +373,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         addButtonListeners();
     }
 
-    //Form here
-    // <form id="saveScoreForm">
     function showNewGameControls() {
         document.querySelector("#controls").innerHTML = `
             <form id="saveScoreForm">
                 <input type="text" id="username" placeholder="Enter your username" required>
-                <button type="submit" id ="saveButton">Save Score</button>
+                <button type="submit" id="saveButton">Save Score</button>
             </form>
             <button id="newGameBtn">New Game</button>`;
         document.querySelector("#saveScoreForm").addEventListener("submit", saveScore);
-        document.getElementById("saveButton").addEventListener("click", function () {
-            document.getElementById("leaderboardContainer").scrollIntoView({ behavior: "smooth" });
+        document.querySelector("#saveButton").addEventListener("click", function () {
+            document.querySelector("#leaderboardContainer").scrollIntoView({ behavior: "smooth" });
         });
         document.querySelector("#newGameBtn").addEventListener("click", restartGame);
     }
@@ -398,6 +440,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
             const refreshResult = await response.json();
             await flyCardsIn(refreshResult.hand, []);
+            addCardListeners();
+            showGameControls();
+            await updateLeaderboard();
         } catch (error) {
             console.error(`Error reloading: ${error}`);
         }
@@ -480,7 +525,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const descendAnimationPromises = cards.map((c, i) => {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
-                    c.style.setProperty("--cardTranslateY", `0px`);
+                    c.style.setProperty("--cardTranslateY", "0px");
                     setTimeout(() => {
                         resolve();
                     }, 500);
@@ -509,56 +554,4 @@ document.addEventListener("DOMContentLoaded", async () => {
         audio.play();
     }
 
-    async function saveScore(event) {
-        event.preventDefault();
-        const username = document.getElementById("username").value.trim();
-        const scoreText = document.getElementById("gameScore").textContent;
-        const score = parseInt(scoreText.replace("Score: ", ""));
-
-        if (!username) {
-            alert("Please enter a valid username.");
-            return;
-        }
-
-        try {
-            const response = await fetch("/game/save-score", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, score })
-            });
-            const result = await response.json();
-
-            if (result.success) {
-                alert("Score saved successfully!");
-                await fetchLeaderboard();
-            } else {
-                alert("Failed to save score.");
-            }
-        } catch (error) {
-            console.error("Error saving score:", error);
-            alert("An error occurred while trying to save your score.");
-        }
-    }
-
-    async function fetchLeaderboard() {
-        try {
-            const response = await fetch("/game/api/leaderboard");
-            const topScores = await response.json();
-            displayLeaderboard(topScores);
-        } catch (error) {
-            console.error("Error fetching leaderboard:", error);
-        }
-    }
-
-    function displayLeaderboard(topScores) {
-        const tbody = document.getElementById("leaderboardBody");
-        tbody.innerHTML = "";
-        topScores.forEach(entry => {
-            const row = `<tr>
-            <td>${entry.username}</td>
-            <td>${entry.score}</td>
-            </tr>`;
-            tbody.innerHTML += row;
-        });
-    }
 });

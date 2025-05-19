@@ -1,5 +1,5 @@
-const { MongoClient } = require('mongodb');
-require('dotenv').config();
+const { MongoClient } = require("mongodb");
+require("dotenv").config();
 
 const uri = process.env.MONGO_CONNECTION_STRING;
 const client = new MongoClient(uri);
@@ -11,9 +11,8 @@ async function connect() {
     db = client.db(process.env.MONGO_DB_NAME);
     const collection = db.collection(process.env.MONGO_COLLECTION);
     await collection.createIndex({ score: -1 });
-    console.log('Connected to MongoDB Atlas');
   } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
+    console.error("Error connecting to MongoDB:", error);
     throw error;
   }
 }
@@ -26,10 +25,9 @@ function getCollection() {
 async function saveScore(username, score) {
     try {
         const collection = getCollection();
-        // Check if username already exists
         const existingUser = await collection.findOne({ username });
         if (existingUser) {
-            throw new Error('Username already exists. Please choose a unique username.');
+            throw new Error("Username already exists. Please choose a unique username.");
         }
         await collection.insertOne({
             username,
@@ -37,7 +35,7 @@ async function saveScore(username, score) {
             createdAt: new Date()
         });
     } catch (error) {
-        console.error('Error saving score:', error);
+        console.error("Error saving score:", error);
         throw error;
     }
 }
@@ -50,7 +48,7 @@ async function getTopScores(limit = 10) {
       .limit(limit)
       .toArray();
   } catch (error) {
-    console.error('Error fetching top scores:', error);
+    console.error("Error fetching top scores:", error);
     throw error;
   }
 }

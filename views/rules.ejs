@@ -1,34 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/icon/favicon.ico">
     <title>Game Rules</title>
     <link rel="stylesheet" href="/style.css">
-
 </head>
-
 <body>
-    <h1 id="game-name">GAME NAME</h1>
+    <h1 id="game-name">Fevari Poker</h1>
     <div id="rule-gameContainer">
         <h2>HOW TO PLAY</h2>
         <div id="rule-goalSection">
             <h3>Build the highest-valued hand in each of the 7 rounds to maximize your score.</h3>
         </div>
-
+        <div id="rule-functionalitySection">
+            <h3>Game Functionality</h3>
+            <p>The game is played over <strong>7 rounds</strong>. In each round, you're dealt 7 cards and must
+                <strong>choose up to 5 cards</strong> to form your
+                final hand. By default, you may discard up to 3 cards, but jokers can grant additional discards. Chips
+                can be
+                used to purchase jokers, which apply special effects or improve hand scoring. Any chips you have
+                left at the end of a round carry over to the next one.
+            </p>
+        </div>
         <div id="rule-scoringSection">
             <h3>Scoring System</h3>
             <p>Each hand's total score is determined by three components:</p>
             <ul>
-                <li><strong>Hand Score</strong> – Based on the type of poker hand (e.g., Full House, Straight, etc.).
+                <li><strong>Hand Score</strong> - Based on the type of poker hand (e.g., Full House, Straight, etc.).
                 </li>
-                <li><strong>Hand Multiplier</strong> – Multiplies your base score; affected by certain augments and
+                <li><strong>Hand Multiplier</strong> - Multiplies your base score; affected by certain augments and
                     jokers.</li>
-                <li><strong>Card Values</strong> – Only the cards that form the poker hand contribute to this.</li>
+                <li><strong>Card Values</strong> - Only the cards that form the poker hand contribute to this.</li>
             </ul>
         </div>
-
         <div id="rule-jokersSection">
             <h3>Jokers</h3>
             <p>Jokers are special cards that enhance your hand by applying modifiers that can increase your score, boost
@@ -42,21 +48,9 @@
                 space. You may also burn a joker at any time as part of your strategy.
             </p>
         </div>
-
-        <div id="rule-functionalitySection">
-            <h3>Game Functionality</h3>
-            <p>The game is played over <strong>7 rounds</strong>. In each round, you're dealt 7 cards and must
-                <strong>choose up to 5 cards</strong> to form your
-                final hand. By default, you may discard up to 3 cards, but jokers can grant additional discards. Chips
-                can be
-                used to purchase jokers, which apply special effects or improve hand scoring. Any chips you have
-                left at the end of a round carry over to the next one.
-            </p>
-        </div>
     </div>
     <div id="rule-buttonContainer">
         <a href="/game/play"><button class="play-button">Play Game</button></a>
     </div>
 </body>
-
 </html>
