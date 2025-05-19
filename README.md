@@ -1,4 +1,7 @@
 # Fevari Poker
+
+## Submitted by Evan Thompson (evant)
+
 ## Group Members: Feenet Oli (foli), Evan Thompson (evant), Ari Kaplan (akapla11)
 
 # Description
@@ -21,8 +24,14 @@ Build the highest-valued poker hand cards throughout 7 rounds.
 
 # YouTube Video Demo
 
+https://youtu.be/XljzCYXUVfU
+
 # APIs Used
 
 All deck handling is done by the [Deck of Cards API](https://deckofcardsapi.com/).
 
+Contact Email: evant@terpmail.umd.edu
+
 Deployed App Link
+
+https://fevari.onrender.com
