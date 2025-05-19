@@ -214,7 +214,7 @@ class Game {
 
     // Special Jokers can be played regardless of the current number of Jokers you possess
     static #SPECIAL_JOKERS = [
-        "Memory Leak(F)"
+        "Memory Leak"
     ];
 
     constructor() {
