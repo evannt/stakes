@@ -4,7 +4,7 @@ Submitted by: Evan Thompson (evant)
 
 Group Members: Feenet Oli (foli), Evan Thompson (evant), Ari Kaplan (akapla11)
 
-App Description: Build the highest-valued poker hand cards throughout 7 rounds.
+App Description: Build the highest-valued poker hand throughout 7 rounds.
 
 YouTube Video Demo: [https://youtu.be/XljzCYXUVfU](https://youtu.be/XljzCYXUVfU)
 
