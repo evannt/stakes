@@ -364,6 +364,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function removeLeaderboardForm() {
         document.querySelector("#controls").innerHTML = `<button id="newGameBtn">New Game</button>`;
+        document.querySelector("#newGameBtn").addEventListener("click", restartGame);
     }
 
     function showGameControls() {
