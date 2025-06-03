@@ -2,136 +2,144 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/x-icon" href="/icon/favicon.ico">
-  <link rel="stylesheet" href="/style.css">
-  <script defer src="/game-client.js"></script>
-  <title>Fevari Poker</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="/icon/favicon.ico">
+    <link rel="stylesheet" href="/style.css">
+    <script defer src="/game-client.js"></script>
+    <title>Stakes Poker</title>
 </head>
-  <body>
+
+<body>
     <div id="gameContainer">
-      <h1 id="headers">Fevari Poker</h1>
-      <div id="roundScoreRow">
-        <div class="round-indicator" id="roundTracker">
-          <% for(let i=1; i <=7; i++) { %>
-            <div class="round-dot <%= i < game.round ? "completed" : (i === Math.min(game.round, 7) ? "active" : "") %>"></div>
-          <% }; %>
+        <h1 id="headers">Stakes Poker</h1>
+        <div id="roundScoreRow">
+            <div class="round-indicator" id="roundTracker">
+                <% for(let i=1; i <=7; i++) { %>
+                    <div class="round-dot <%= i < game.round ? " completed" : (i===Math.min(game.round, 7) ? "active"
+                        : "" ) %>"></div>
+                    <% }; %>
+            </div>
         </div>
-      </div>
-    <div id="scoreContainer">
-      <div id="gameScore">Score: <%= game.score %>
-      </div>
-      <div id="gameMult">Mult: x<%= game.mult %>
-      </div>
-      <div id="gameChips">Chips: <%= game.chips %>
-      </div>
-      <div id="gameDiscards">Discards: <%= game.discards %>
-      </div>
-      <div id="gameHighScore">High Score: <%= highScore %>
-      </div>
-    </div>
-    <div id="roundResult">
-      <div id="roundScore"></div>
-      <div id="roundChips"></div>
-    </div>
-    <div id="cardScoreContainer">
-      <div id="handScoreContainer">
-        <div id="handType">
-          <%= game.handType %>
+        <div id="scoreContainer">
+            <div id="gameScore">Score: <%= game.score %>
+            </div>
+            <div id="gameMult">Mult: x<%= game.mult %>
+            </div>
+            <div id="gameChips">Chips: <%= game.chips %>
+            </div>
+            <div id="gameDiscards">Discards: <%= game.discards %>
+            </div>
+            <div id="gameHighScore">High Score: <%= highScore %>
+            </div>
         </div>
-        <div id="scoreCalc">
-          <div id="handBaseScore">
-            <%= game.handBaseScore %>
-          </div> x
-          <div id="handMult">
-            <%= game.handMult %>
-          </div>
+        <div id="roundResult">
+            <div id="roundScore"></div>
+            <div id="roundChips"></div>
         </div>
-      </div>
-      <div id="playContainer">
-        <div id="deckContainer">
-          <img class="deckCard" src="https://deckofcardsapi.com/static/img/back.png" width="80" height="112" alt="Back of Card">
-          <img class="deckCard" src="https://deckofcardsapi.com/static/img/back.png" width="80" height="112" alt="Back of Card">
-          <img class="deckCard" src="https://deckofcardsapi.com/static/img/back.png" width="80" height="112" alt="Back of Card">
-          <img class="deckCard" src="https://deckofcardsapi.com/static/img/back.png" width="80" height="112" alt="Back of Card">
-          <img class="deckCard" src="https://deckofcardsapi.com/static/img/back.png" width="80" height="112" alt="Back of Card">
+        <div id="cardScoreContainer">
+            <div id="handScoreContainer">
+                <div id="handType">
+                    <%= game.handType %>
+                </div>
+                <div id="scoreCalc">
+                    <div id="handBaseScore">
+                        <%= game.handBaseScore %>
+                    </div> x
+                    <div id="handMult">
+                        <%= game.handMult %>
+                    </div>
+                </div>
+            </div>
+            <div id="playContainer">
+                <div id="deckContainer">
+                    <img class="deckCard" src="https://deckofcardsapi.com/static/img/back.png" width="80" height="112"
+                        alt="Back of Card">
+                    <img class="deckCard" src="https://deckofcardsapi.com/static/img/back.png" width="80" height="112"
+                        alt="Back of Card">
+                    <img class="deckCard" src="https://deckofcardsapi.com/static/img/back.png" width="80" height="112"
+                        alt="Back of Card">
+                    <img class="deckCard" src="https://deckofcardsapi.com/static/img/back.png" width="80" height="112"
+                        alt="Back of Card">
+                    <img class="deckCard" src="https://deckofcardsapi.com/static/img/back.png" width="80" height="112"
+                        alt="Back of Card">
+                </div>
+                <div id="cardContainer">
+                </div>
+            </div>
         </div>
-        <div id="cardContainer">
-        </div>
-      </div>
-    </div>
-    <div id="controls">
-      <% if (game.round > 7) { %>
-        <% if (!game.scoreSaved) { %>
-        <form id="saveScoreForm">
-          <input type="text" id="username" placeholder="Enter your username" required>
-          <button type="submit" id="saveButton">Save Score</button>
-        </form>
-        <% } %>
-        <button id="newGameBtn">New Game</button>
-      <% } else { %>
-        <button id="dealCardsBtn">Deal Cards</button>
-        <!-- <button id="playHandBtn">Play Hand</button>
+        <div id="controls">
+            <% if (game.round> 7) { %>
+                <% if (!game.scoreSaved) { %>
+                    <form id="saveScoreForm">
+                        <input type="text" id="username" placeholder="Enter your username" required>
+                        <button type="submit" id="saveButton">Save Score</button>
+                    </form>
+                    <% } %>
+                        <button id="newGameBtn">New Game</button>
+                        <% } else { %>
+                            <button id="dealCardsBtn">Deal Cards</button>
+                            <!-- <button id="playHandBtn">Play Hand</button>
         <button id="discardBtn">Discard</button> -->
-      <% } %>
-    </div>
-    <div id="jokerSection">
-      <div>
-        <h3 id="headers">Joker Store</h3>
-        <div id="jokerStoreContainer">
-          <% game.jokerStore.forEach(j=> { %>
-            <div class="storeJoker" data-name="<%= j.name %>">
-              <div class="jokerName">
-                <%= j.name %>
-              </div>
-              <div class="jokerRarity">
-                <%= j.rarity %>
-              </div>
-              <div class="jokerDescription">
-                <%= j.description %>
-              </div>
-              <div class="jokerCost">
-                Cost: <%= j.cost %>
-              </div>
-              <button class="buyJokerBtn" data-name="<%= j.name %>">Buy</button>
-            </div>
-          <% }); %>
+                            <% } %>
         </div>
-      </div>
-      <div>
-        <h3 id="headers">My Jokers</h3>
-        <div id="jokerContainer">
-          <% game.jokers.forEach(j=> { %>
-            <div class="joker" data-name="<%= j.name %>">
-              <div class="jokerName">
-                <%= j.name %>
-              </div>
-              <div class="jokerRarity">
-                <%= j.rarity %>
-              </div>
-              <div class="jokerDescription">
-                <%= j.description %>
-              </div>
-              <button class="burnJokerBtn" data-name="<%= j.name %>">Burn</button>
+        <div id="jokerSection">
+            <div>
+                <h3 id="headers">Joker Store</h3>
+                <div id="jokerStoreContainer">
+                    <% game.jokerStore.forEach(j=> { %>
+                        <div class="storeJoker" data-name="<%= j.name %>">
+                            <div class="jokerName">
+                                <%= j.name %>
+                            </div>
+                            <div class="jokerRarity">
+                                <%= j.rarity %>
+                            </div>
+                            <div class="jokerDescription">
+                                <%= j.description %>
+                            </div>
+                            <div class="jokerCost">
+                                Cost: <%= j.cost %>
+                            </div>
+                            <button class="buyJokerBtn" data-name="<%= j.name %>">Buy</button>
+                        </div>
+                        <% }); %>
+                </div>
             </div>
-          <% }); %>
+            <div>
+                <h3 id="headers">My Jokers</h3>
+                <div id="jokerContainer">
+                    <% game.jokers.forEach(j=> { %>
+                        <div class="joker" data-name="<%= j.name %>">
+                            <div class="jokerName">
+                                <%= j.name %>
+                            </div>
+                            <div class="jokerRarity">
+                                <%= j.rarity %>
+                            </div>
+                            <div class="jokerDescription">
+                                <%= j.description %>
+                            </div>
+                            <button class="burnJokerBtn" data-name="<%= j.name %>">Burn</button>
+                        </div>
+                        <% }); %>
+                </div>
+            </div>
         </div>
-      </div>
+        <div id="leaderboardContainer">
+            <h2>Leaderboard</h2>
+            <table id="leaderboard">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboardBody">
+                </tbody>
+            </table>
+        </div>
     </div>
-    <div id="leaderboardContainer">
-        <h2>Leaderboard</h2>
-        <table id="leaderboard">
-          <thead>
-            <tr>
-              <th>Username</th>
-              <th>Score</th>
-            </tr>
-          </thead>
-          <tbody id="leaderboardBody">
-          </tbody>
-        </table>
-    </div>
-  </div>
 </body>
+
 </html>

@@ -5,7 +5,7 @@ const path = require("path");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 const app = express();
-const db = require("./models/db"); 
+const db = require("./models/db");
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -13,7 +13,6 @@ app.set("views", path.join(__dirname, "views"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/sounds", express.static(path.join(__dirname, "sounds")));
-// app.use("/icon", express.static(path.join(__dirname, "icon")));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(session({
     secret: process.env.SESSION_KEY,
@@ -36,7 +35,7 @@ async function startServer() {
     try {
         await db.connect();
         app.listen(port, () => {
-            console.log(`Fevari Poker started at http://localhost:${port}`);
+            console.log(`Stakes Poker started at http://localhost:${port}`);
         });
     } catch (error) {
         console.error("Failed to start server:", error);
