@@ -1,4 +1,4 @@
-# :spades: Stakes Poker
+# :spades: Stakes
 
 A web-based poker hand building game designed that challenges players to achieve the highest score possible within 7 rounds.
 Build the highest-valued poker hand throughout 7 rounds and use Jokers to increase the score you earn.
